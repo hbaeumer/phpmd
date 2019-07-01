@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\TextUI;
@@ -46,13 +47,15 @@ class Command
      * <b>EXIT_SUCCESS</b> even if any violation is found.
      *
      * @param \PHPMD\TextUI\CommandLineOptions $opts
-     * @param \PHPMD\RuleSetFactory $ruleSetFactory
-     * @return integer
+     * @param \PHPMD\RuleSetFactory            $ruleSetFactory
+     *
+     * @return int
      */
     public function run(CommandLineOptions $opts, RuleSetFactory $ruleSetFactory)
     {
         if ($opts->hasVersion()) {
             fwrite(STDOUT, sprintf('PHPMD %s', $this->getVersion()) . PHP_EOL);
+
             return self::EXIT_SUCCESS;
         }
 
@@ -63,7 +66,7 @@ class Command
         $renderer = $opts->createRenderer();
         $renderer->setWriter(new StreamWriter($stream));
 
-        $renderers = array($renderer);
+        $renderers = [$renderer];
 
         foreach ($opts->getReportFiles() as $reportFormat => $reportFile) {
             $reportRenderer = $opts->createRenderer($reportFormat);
@@ -82,9 +85,9 @@ class Command
         $phpmd = new PHPMD();
         $phpmd->setOptions(
             array_filter(
-                array(
-                    'coverage' => $opts->getCoverageReport()
-                )
+                [
+                    'coverage' => $opts->getCoverageReport(),
+                ]
             )
         );
 
@@ -105,9 +108,10 @@ class Command
             $ruleSetFactory
         );
 
-        if ($phpmd->hasViolations() && !$opts->ignoreViolationsOnExit()) {
+        if ($phpmd->hasViolations() && ! $opts->ignoreViolationsOnExit()) {
             return self::EXIT_VIOLATION;
         }
+
         return self::EXIT_SUCCESS;
     }
 
@@ -122,9 +126,10 @@ class Command
 
         $version = '@package_version@';
         if (file_exists($build)) {
-            $data = @parse_ini_file($build);
+            $data    = @parse_ini_file($build);
             $version = $data['project.version'];
         }
+
         return $version;
     }
 
@@ -132,21 +137,23 @@ class Command
      * The main method that can be used by a calling shell script, the return
      * value can be used as exit code.
      *
-     * @param array $args The raw command line arguments array.
-     * @return integer
+     * @param string[] $args The raw command line arguments array.
+     *
+     * @return int
      */
     public static function main(array $args)
     {
         try {
             $ruleSetFactory = new RuleSetFactory();
-            $options = new CommandLineOptions($args, $ruleSetFactory->listAvailableRuleSets());
-            $command = new Command();
+            $options        = new CommandLineOptions($args, $ruleSetFactory->listAvailableRuleSets());
+            $command        = new Command();
 
             $exitCode = $command->run($options, $ruleSetFactory);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             fwrite(STDERR, $e->getMessage() . PHP_EOL);
             $exitCode = self::EXIT_EXCEPTION;
         }
+
         return $exitCode;
     }
 }

@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD;
@@ -30,16 +31,15 @@ class ParserFactory
     /**
      * Mapping between phpmd option names and those used by pdepend.
      *
-     * @var array
+     * @var string[]
      */
-    private $phpmd2pdepend = array(
-        'coverage'  =>  'coverage-report'
-    );
+    private $phpmd2pdepend = ['coverage' => 'coverage-report'];
 
     /**
      * Creates the used {@link \PHPMD\Parser} analyzer instance.
      *
      * @param \PHPMD\PHPMD $phpmd
+     *
      * @return \PHPMD\Parser
      */
     public function create(PHPMD $phpmd)
@@ -72,7 +72,8 @@ class ParserFactory
      * Configures the given PDepend\Engine instance based on some user settings.
      *
      * @param \PDepend\Engine $pdepend
-     * @param \PHPMD\PHPMD $phpmd
+     * @param \PHPMD\PHPMD    $phpmd
+     *
      * @return \PDepend\Engine
      */
     private function init(Engine $pdepend, PHPMD $phpmd)
@@ -89,7 +90,8 @@ class ParserFactory
      * Configures the input source.
      *
      * @param \PDepend\Engine $pdepend
-     * @param \PHPMD\PHPMD $phpmd
+     * @param \PHPMD\PHPMD    $phpmd
+     *
      * @return void
      */
     private function initInput(Engine $pdepend, PHPMD $phpmd)
@@ -107,48 +109,57 @@ class ParserFactory
      * Initializes the ignored files and path's.
      *
      * @param \PDepend\Engine $pdepend
-     * @param \PHPMD\PHPMD $phpmd
+     * @param \PHPMD\PHPMD    $phpmd
+     *
      * @return void
      */
     private function initIgnores(Engine $pdepend, PHPMD $phpmd)
     {
-        if (count($phpmd->getIgnorePattern()) > 0) {
-            $pdepend->addFileFilter(
-                new ExcludePathFilter($phpmd->getIgnorePattern())
-            );
+        if (count($phpmd->getIgnorePattern()) <= 0) {
+            return;
         }
+
+        $pdepend->addFileFilter(
+            new ExcludePathFilter($phpmd->getIgnorePattern())
+        );
     }
 
     /**
      * Initializes the accepted php source file extensions.
      *
      * @param \PDepend\Engine $pdepend
-     * @param \PHPMD\PHPMD $phpmd
+     * @param \PHPMD\PHPMD    $phpmd
+     *
      * @return void
      */
     private function initExtensions(Engine $pdepend, PHPMD $phpmd)
     {
-        if (count($phpmd->getFileExtensions()) > 0) {
-            $pdepend->addFileFilter(
-                new ExtensionFilter($phpmd->getFileExtensions())
-            );
+        if (count($phpmd->getFileExtensions()) <= 0) {
+            return;
         }
+
+        $pdepend->addFileFilter(
+            new ExtensionFilter($phpmd->getFileExtensions())
+        );
     }
 
     /**
      * Initializes additional options for pdepend.
      *
      * @param \PDepend\Engine $pdepend
-     * @param \PHPMD\PHPMD $phpmd
+     * @param \PHPMD\PHPMD    $phpmd
+     *
      * @return void
      */
     private function initOptions(Engine $pdepend, PHPMD $phpmd)
     {
-        $options = array();
+        $options = [];
         foreach (array_filter($phpmd->getOptions()) as $name => $value) {
-            if (isset($this->phpmd2pdepend[$name])) {
-                $options[$this->phpmd2pdepend[$name]] = $value;
+            if (! isset($this->phpmd2pdepend[$name])) {
+                continue;
             }
+
+            $options[$this->phpmd2pdepend[$name]] = $value;
         }
         $pdepend->setOptions($options);
     }

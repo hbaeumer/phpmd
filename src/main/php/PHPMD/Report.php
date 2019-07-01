@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD;
@@ -26,9 +27,9 @@ class Report
     /**
      * List of rule violations detected in the analyzed source code.
      *
-     * @var array
+     * @var array<string, mixed>
      */
-    private $ruleViolations = array();
+    private $ruleViolations = [];
 
     /**
      * The start time for this report.
@@ -47,27 +48,28 @@ class Report
     /**
      * Errors that occurred while parsing the source.
      *
-     * @var array
+     * @var ProcessingError[]
      * @since 1.2.1
      */
-    private $errors = array();
+    private $errors = [];
 
     /**
      * Adds a rule violation to this report.
      *
      * @param \PHPMD\RuleViolation $violation
+     *
      * @return void
      */
     public function addRuleViolation(RuleViolation $violation)
     {
         $fileName = $violation->getFileName();
-        if (!isset($this->ruleViolations[$fileName])) {
-            $this->ruleViolations[$fileName] = array();
+        if (! isset($this->ruleViolations[$fileName])) {
+            $this->ruleViolations[$fileName] = [];
         }
 
         $beginLine = $violation->getBeginLine();
-        if (!isset($this->ruleViolations[$fileName][$beginLine])) {
-            $this->ruleViolations[$fileName][$beginLine] = array();
+        if (! isset($this->ruleViolations[$fileName][$beginLine])) {
+            $this->ruleViolations[$fileName][$beginLine] = [];
         }
 
         $this->ruleViolations[$fileName][$beginLine][] = $violation;
@@ -76,25 +78,26 @@ class Report
     /**
      * Returns <b>true</b> when this report does not contain any errors.
      *
-     * @return boolean
+     * @return bool
+     *
      * @since 0.2.5
      */
     public function isEmpty()
     {
-        return (count($this->ruleViolations) === 0);
+        return count($this->ruleViolations) === 0;
     }
 
     /**
      * Returns an iterator with all occurred rule violations.
      *
-     * @return \PHPMD\RuleViolation[]
+     * @return \PHPMD\RuleViolation[]|\ArrayIterator
      */
     public function getRuleViolations()
     {
         // First sort by file name
         ksort($this->ruleViolations);
 
-        $violations = array();
+        $violations = [];
         foreach ($this->ruleViolations as $violationInLine) {
             // Second sort is by line number
             ksort($violationInLine);
@@ -111,7 +114,9 @@ class Report
      * Adds a processing error that occurred while parsing the source.
      *
      * @param \PHPMD\ProcessingError $error
+     *
      * @return void
+     *
      * @since 1.2.1
      */
     public function addError(ProcessingError $error)
@@ -123,7 +128,8 @@ class Report
      * Returns <b>true</b> when the report contains at least one processing
      * error. Otherwise this method will return <b>false</b>.
      *
-     * @return boolean
+     * @return bool
+     *
      * @since 1.2.1
      */
     public function hasErrors()
@@ -136,6 +142,7 @@ class Report
      * added to this report.
      *
      * @return \Iterator
+     *
      * @since 1.2.1
      */
     public function getErrors()

@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Rule\Design;
@@ -31,31 +32,34 @@ class DepthOfInheritance extends AbstractRule implements ClassAware
      * node.
      *
      * @param \PHPMD\AbstractNode $node
+     *
      * @return void
      */
     public function apply(AbstractNode $node)
     {
         try {
-            $threshold = $this->getIntProperty('maximum');
+            $threshold   = $this->getIntProperty('maximum');
             $comparision = 1;
         } catch (\OutOfBoundsException $e) {
-            $threshold = $this->getIntProperty('minimum');
+            $threshold   = $this->getIntProperty('minimum');
             $comparision = 2;
         }
 
         $dit = $node->getMetric('dit');
-        if (($comparision === 1 && $dit > $threshold) ||
-            ($comparision === 2 && $dit >= $threshold)
+        if (($comparision !== 1 || $dit <= $threshold) &&
+            ($comparision !== 2 || $dit < $threshold)
         ) {
-            $this->addViolation(
-                $node,
-                array(
-                    $node->getType(),
-                    $node->getName(),
-                    $dit,
-                    $threshold
-                )
-            );
+            return;
         }
+
+        $this->addViolation(
+            $node,
+            [
+                $node->getType(),
+                $node->getName(),
+                $dit,
+                $threshold,
+            ]
+        );
     }
 }

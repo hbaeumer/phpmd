@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Renderer;
@@ -53,6 +54,7 @@ class HTMLRenderer extends AbstractRenderer
      * phase.
      *
      * @param \PHPMD\Report $report
+     *
      * @return void
      */
     public function renderReport(Report $report)
@@ -123,12 +125,14 @@ class HTMLRenderer extends AbstractRenderer
      * This method will render a html table with occurred processing errors.
      *
      * @param \PHPMD\Report $report
+     *
      * @return void
+     *
      * @since 1.2.1
      */
     private function glomProcessingErrors(Report $report)
     {
-        if (false === $report->hasErrors()) {
+        if ($report->hasErrors() === false) {
             return;
         }
 

@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Rule\Design;
@@ -32,12 +33,13 @@ class EvalExpression extends AbstractRule implements MethodAware, FunctionAware
      * and emits a rule violation when it exists.
      *
      * @param \PHPMD\AbstractNode $node
+     *
      * @return void
      */
     public function apply(AbstractNode $node)
     {
         foreach ($node->findChildrenOfType('EvalExpression') as $eval) {
-            $this->addViolation($eval, array($node->getType(), $node->getName()));
+            $this->addViolation($eval, [$node->getType(), $node->getName()]);
         }
     }
 }

@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Rule;
@@ -34,20 +35,21 @@ class UnusedPrivateField extends AbstractRule implements ClassAware
      *
      * @var \PHPMD\Node\ASTNode[]
      */
-    private $fields = array();
+    private $fields = [];
 
     /**
      * This method checks that all private class properties are at least accessed
      * by one method.
      *
      * @param \PHPMD\AbstractNode $node
+     *
      * @return void
      */
     public function apply(AbstractNode $node)
     {
-        /** @var $node ClassNode */
+        /** @var ClassNode $node */
         foreach ($this->collectUnusedPrivateFields($node) as $field) {
-            $this->addViolation($field, array($field->getImage()));
+            $this->addViolation($field, [$field->getImage()]);
         }
     }
 
@@ -56,11 +58,12 @@ class UnusedPrivateField extends AbstractRule implements ClassAware
      * method.
      *
      * @param \PHPMD\Node\ClassNode $class
+     *
      * @return \PHPMD\AbstractNode[]
      */
     private function collectUnusedPrivateFields(ClassNode $class)
     {
-        $this->fields = array();
+        $this->fields = [];
 
         $this->collectPrivateFields($class);
         $this->removeUsedFields($class);
@@ -73,15 +76,18 @@ class UnusedPrivateField extends AbstractRule implements ClassAware
      * them in the <b>$_fields</b> property.
      *
      * @param \PHPMD\Node\ClassNode $class
+     *
      * @return void
      */
     private function collectPrivateFields(ClassNode $class)
     {
         foreach ($class->findChildrenOfType('FieldDeclaration') as $declaration) {
             /** @var $declaration ASTNode */
-            if ($declaration->isPrivate()) {
-                $this->collectPrivateField($declaration);
+            if (! $declaration->isPrivate()) {
+                continue;
             }
+
+            $this->collectPrivateField($declaration);
         }
     }
 
@@ -90,6 +96,7 @@ class UnusedPrivateField extends AbstractRule implements ClassAware
      * declaration and stores them in the <b>$_fields</b> property.
      *
      * @param \PHPMD\Node\ASTNode $declaration
+     *
      * @return void
      */
     private function collectPrivateField(ASTNode $declaration)
@@ -106,15 +113,18 @@ class UnusedPrivateField extends AbstractRule implements ClassAware
      * one of the postfix nodes.
      *
      * @param \PHPMD\Node\ClassNode $class
+     *
      * @return void
      */
     private function removeUsedFields(ClassNode $class)
     {
         foreach ($class->findChildrenOfType('PropertyPostfix') as $postfix) {
             /** @var $postfix ASTNode */
-            if ($this->isInScopeOfClass($class, $postfix)) {
-                $this->removeUsedField($postfix);
+            if (! $this->isInScopeOfClass($class, $postfix)) {
+                continue;
             }
+
+            $this->removeUsedField($postfix);
         }
     }
 
@@ -123,6 +133,7 @@ class UnusedPrivateField extends AbstractRule implements ClassAware
      * accessed through the given property postfix node.
      *
      * @param \PHPMD\Node\ASTNode $postfix
+     *
      * @return void
      */
     private function removeUsedField(ASTNode $postfix)
@@ -135,16 +146,20 @@ class UnusedPrivateField extends AbstractRule implements ClassAware
             $child = $postfix->getFirstChildOfType('Variable');
         }
 
-        if ($this->isValidPropertyNode($child)) {
-            unset($this->fields[$image . $child->getImage()]);
+        if (! $this->isValidPropertyNode($child)) {
+            return;
         }
+
+        unset($this->fields[$image . $child->getImage()]);
     }
 
     /**
      * Checks if the given node is a valid property node.
      *
      * @param \PHPMD\Node\ASTNode $node
-     * @return boolean
+     *
+     * @return bool
+     *
      * @since 0.2.6
      */
     protected function isValidPropertyNode(ASTNode $node = null)
@@ -154,7 +169,7 @@ class UnusedPrivateField extends AbstractRule implements ClassAware
         }
 
         $parent = $node->getParent();
-        while (!$parent->isInstanceOf('PropertyPostfix')) {
+        while (! $parent->isInstanceOf('PropertyPostfix')) {
             if ($parent->isInstanceOf('CompoundVariable')) {
                 return false;
             }
@@ -163,6 +178,7 @@ class UnusedPrivateField extends AbstractRule implements ClassAware
                    return false;
             }
         }
+
         return true;
     }
 
@@ -171,25 +187,25 @@ class UnusedPrivateField extends AbstractRule implements ClassAware
      * instance or static reference to the given class.
      *
      * @param \PHPMD\Node\ClassNode $class
-     * @param \PHPMD\Node\ASTNode $postfix
-     * @return boolean
+     * @param \PHPMD\Node\ASTNode   $postfix
+     *
+     * @return bool
      */
     protected function isInScopeOfClass(ClassNode $class, ASTNode $postfix)
     {
         $owner = $this->getOwner($postfix);
 
-        return (
-            $owner->isInstanceOf('SelfReference') ||
+        return $owner->isInstanceOf('SelfReference') ||
             $owner->isInstanceOf('StaticReference') ||
             strcasecmp($owner->getImage(), '$this') === 0 ||
-            strcasecmp($owner->getImage(), $class->getImage()) === 0
-        );
+            strcasecmp($owner->getImage(), $class->getImage()) === 0;
     }
 
     /**
      * Looks for owner of the given variable.
      *
      * @param \PHPMD\Node\ASTNode $postfix
+     *
      * @return \PHPMD\Node\ASTNode
      */
     protected function getOwner(ASTNode $postfix)

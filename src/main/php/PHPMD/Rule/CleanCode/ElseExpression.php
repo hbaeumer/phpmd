@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Rule\CleanCode;
@@ -36,6 +37,7 @@ class ElseExpression extends AbstractRule implements MethodAware, FunctionAware
      * This method checks if a method/function uses an else expression and add a violation for each one found.
      *
      * @param \PHPMD\AbstractNode $node
+     *
      * @return void
      */
     public function apply(AbstractNode $node)
@@ -43,41 +45,41 @@ class ElseExpression extends AbstractRule implements MethodAware, FunctionAware
         foreach ($node->findChildrenOfType('ScopeStatement') as $scope) {
             $parent = $scope->getParent();
 
-            if (false === $this->isIfOrElseIfStatement($parent)) {
+            if ($this->isIfOrElseIfStatement($parent) === false) {
                 continue;
             }
 
-            if (false === $this->isElseScope($scope, $parent)) {
+            if ($this->isElseScope($scope, $parent) === false) {
                 continue;
             }
 
-            $this->addViolation($scope, array($node->getImage()));
+            $this->addViolation($scope, [$node->getImage()]);
         }
     }
 
     /**
      * Whether the given scope is an else clause
      *
-     * @param $scope
-     * @param ASTNode $parent
+     * @param AbstractNode $scope
+     * @param ASTNode      $parent
+     *
      * @return bool
      */
     private function isElseScope($scope, ASTNode $parent)
     {
-        return (
-            count($parent->getChildren()) === 3 &&
-            $scope->getNode() === $parent->getChild(2)->getNode()
-        );
+        return count($parent->getChildren()) === 3 &&
+            $scope->getNode() === $parent->getChild(2)->getNode();
     }
 
     /**
      * Whether the parent node is an if or an elseif clause
      *
      * @param ASTNode $parent
+     *
      * @return bool
      */
     private function isIfOrElseIfStatement(ASTNode $parent)
     {
-        return ($parent->getName() === "if" || $parent->getName() === "elseif");
+        return $parent->getName() === 'if' || $parent->getName() === 'elseif';
     }
 }

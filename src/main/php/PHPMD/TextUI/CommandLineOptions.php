@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\TextUI;
@@ -36,14 +37,14 @@ class CommandLineOptions
     /**
      * The minimum rule priority.
      *
-     * @var integer
+     * @var int
      */
     protected $minimumPriority = Rule::LOWEST_PRIORITY;
 
     /**
      * The maximum rule priority.
      *
-     * @var integer
+     * @var int
      */
     protected $maximumPriority = Rule::HIGHEST_PRIORITY;
 
@@ -71,9 +72,9 @@ class CommandLineOptions
     /**
      * Additional report files.
      *
-     * @var array
+     * @var string[]
      */
-    protected $reportFiles = array();
+    protected $reportFiles = [];
 
     /**
      * A ruleset filename or a comma-separated string of ruleset filenames.
@@ -106,14 +107,14 @@ class CommandLineOptions
     /**
      * Should the shell show the current phpmd version?
      *
-     * @var boolean
+     * @var bool
      */
     protected $version = false;
 
     /**
      * Should PHPMD run in strict mode?
      *
-     * @var boolean
+     * @var bool
      * @since 1.2.0
      */
     protected $strict = false;
@@ -121,43 +122,44 @@ class CommandLineOptions
     /**
      * Should PHPMD exit without error code even if violation is found?
      *
-     * @var boolean
+     * @var bool
      */
     protected $ignoreViolationsOnExit = false;
 
     /**
      * List of available rule-sets.
      *
-     * @var array(string)
+     * @var string[]
      */
-    protected $availableRuleSets = array();
+    protected $availableRuleSets = [];
 
     /**
      * Constructs a new command line options instance.
      *
-     * @param array $args
-     * @param array $availableRuleSets
+     * @param string[] $args
+     * @param string[] $availableRuleSets
+     *
      * @throws \InvalidArgumentException
      */
-    public function __construct(array $args, array $availableRuleSets = array())
+    public function __construct(array $args, array $availableRuleSets = [])
     {
         // Remove current file name
         array_shift($args);
 
         $this->availableRuleSets = $availableRuleSets;
 
-        $arguments = array();
+        $arguments = [];
         while (($arg = array_shift($args)) !== null) {
             switch ($arg) {
                 case '--min-priority':
                 case '--minimum-priority':
                 case '--minimumpriority':
-                    $this->minimumPriority = (int)array_shift($args);
+                    $this->minimumPriority = (int) array_shift($args);
                     break;
                 case '--max-priority':
                 case '--maximum-priority':
                 case '--maximumpriority':
-                    $this->maximumPriority = (int)array_shift($args);
+                    $this->maximumPriority = (int) array_shift($args);
                     break;
                 case '--report-file':
                 case '--reportfile':
@@ -215,9 +217,9 @@ class CommandLineOptions
             throw new \InvalidArgumentException($this->usage(), self::INPUT_ERROR);
         }
 
-        $this->inputPath = (string)array_shift($arguments);
-        $this->reportFormat = (string)array_shift($arguments);
-        $this->ruleSets = (string)array_shift($arguments);
+        $this->inputPath    = (string) array_shift($arguments);
+        $this->reportFormat = (string) array_shift($arguments);
+        $this->ruleSets     = (string) array_shift($arguments);
     }
 
     /**
@@ -255,7 +257,7 @@ class CommandLineOptions
      * Returns a hash with report files specified for different renderers. The
      * key represents the report format and the value the report file location.
      *
-     * @return array
+     * @return string[]
      */
     public function getReportFiles()
     {
@@ -275,7 +277,7 @@ class CommandLineOptions
     /**
      * Returns the minimum rule priority.
      *
-     * @return integer
+     * @return int
      */
     public function getMinimumPriority()
     {
@@ -285,7 +287,7 @@ class CommandLineOptions
     /**
      * Returns the maximum rule priority.
      *
-     * @return integer
+     * @return int
      */
     public function getMaximumPriority()
     {
@@ -328,7 +330,7 @@ class CommandLineOptions
     /**
      * Was the <b>--version</b> passed to PHPMD's command line interface?
      *
-     * @return boolean
+     * @return bool
      */
     public function hasVersion()
     {
@@ -338,7 +340,8 @@ class CommandLineOptions
     /**
      * Was the <b>--strict</b> option passed to PHPMD's command line interface?
      *
-     * @return boolean
+     * @return bool
+     *
      * @since 1.2.0
      */
     public function hasStrict()
@@ -349,7 +352,7 @@ class CommandLineOptions
     /**
      * Was the <b>--ignore-violations-on-exit</b> passed to PHPMD's command line interface?
      *
-     * @return boolean
+     * @return bool
      */
     public function ignoreViolationsOnExit()
     {
@@ -368,7 +371,9 @@ class CommandLineOptions
      * </ul>
      *
      * @param string $reportFormat
+     *
      * @return \PHPMD\AbstractRenderer
+     *
      * @throws \InvalidArgumentException When the specified renderer does not exist.
      */
     public function createRenderer($reportFormat = null)
@@ -413,11 +418,12 @@ class CommandLineOptions
 
     /**
      * @return \PHPMD\AbstractRenderer
+     *
      * @throws \InvalidArgumentException
      */
     protected function createCustomRenderer()
     {
-        if ('' === $this->reportFormat) {
+        if ($this->reportFormat === '') {
             throw new \InvalidArgumentException(
                 'Can\'t create report with empty format.',
                 self::INPUT_ERROR
@@ -489,13 +495,15 @@ class CommandLineOptions
      */
     protected function getListOfAvailableRenderers()
     {
-        $renderersDirPathName=__DIR__.'/../Renderer';
-        $renderers = array();
+        $renderersDirPathName =__DIR__ . '/../Renderer';
+        $renderers            = [];
 
         foreach (scandir($renderersDirPathName) as $rendererFileName) {
-            if (preg_match('/^(\w+)Renderer.php$/i', $rendererFileName, $rendererName)) {
-                $renderers[] =  strtolower($rendererName[1]);
+            if (! preg_match('/^(\w+)Renderer.php$/i', $rendererFileName, $rendererName)) {
+                continue;
             }
+
+            $renderers[] =  strtolower($rendererName[1]);
         }
 
         sort($renderers);
@@ -512,6 +520,7 @@ class CommandLineOptions
      *
      * @param string $deprecatedName
      * @param string $newName
+     *
      * @return void
      */
     protected function logDeprecated($deprecatedName, $newName)
@@ -532,8 +541,11 @@ class CommandLineOptions
      * exception.
      *
      * @param string $inputFile Specified input file name.
+     *
      * @return string
+     *
      * @throws \InvalidArgumentException If the specified input file does not exist.
+     *
      * @since 1.1.0
      */
     protected function readInputFile($inputFile)
@@ -541,6 +553,6 @@ class CommandLineOptions
         if (file_exists($inputFile)) {
             return join(',', array_map('trim', file($inputFile)));
         }
-        throw new \InvalidArgumentException("Input file '{$inputFile}' not exists.");
+        throw new \InvalidArgumentException(sprintf('Input file %s not exists.', $inputFile));
     }
 }

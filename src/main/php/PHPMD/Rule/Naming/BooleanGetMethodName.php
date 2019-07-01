@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Rule\Naming;
@@ -34,14 +35,17 @@ class BooleanGetMethodName extends AbstractRule implements MethodAware
      * length.
      *
      * @param \PHPMD\AbstractNode $node
+     *
      * @return void
      */
     public function apply(AbstractNode $node)
     {
         /** @var $node MethodNode */
-        if ($this->isBooleanGetMethod($node)) {
-            $this->addViolation($node, array($node->getImage()));
+        if (! $this->isBooleanGetMethod($node)) {
+            return;
         }
+
+        $this->addViolation($node, [$node->getImage()]);
     }
 
     /**
@@ -49,7 +53,8 @@ class BooleanGetMethodName extends AbstractRule implements MethodAware
      * boolean get method.
      *
      * @param \PHPMD\Node\MethodNode $node
-     * @return boolean
+     *
+     * @return bool
      */
     private function isBooleanGetMethod(MethodNode $node)
     {
@@ -62,23 +67,26 @@ class BooleanGetMethodName extends AbstractRule implements MethodAware
      * Tests if the given method starts with <b>get</b> or <b>_get</b>.
      *
      * @param \PHPMD\Node\MethodNode $node
-     * @return boolean
+     *
+     * @return bool
      */
     private function isGetterMethodName(MethodNode $node)
     {
-        return (preg_match('(^_?get)i', $node->getImage()) > 0);
+        return preg_match('(^_?get)i', $node->getImage()) > 0;
     }
 
     /**
      * Tests if the given method is declared with return type boolean.
      *
      * @param \PHPMD\Node\MethodNode $node
-     * @return boolean
+     *
+     * @return bool
      */
     private function isReturnTypeBoolean(MethodNode $node)
     {
         $comment = $node->getDocComment();
-        return (preg_match('(\*\s*@return\s+bool(ean)?\s)i', $comment) > 0);
+
+        return preg_match('(\*\s*@return\s+bool(ean)?\s)i', $comment) > 0;
     }
 
     /**
@@ -86,13 +94,15 @@ class BooleanGetMethodName extends AbstractRule implements MethodAware
      * or has no parameters.
      *
      * @param \PHPMD\Node\MethodNode $node
-     * @return boolean
+     *
+     * @return bool
      */
     private function isParameterizedOrIgnored(MethodNode $node)
     {
         if ($this->getBooleanProperty('checkParameterizedMethods')) {
             return $node->getParameterCount() === 0;
         }
+
         return true;
     }
 }

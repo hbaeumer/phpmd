@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Node;
@@ -24,9 +25,7 @@ use PDepend\Source\AST\AbstractASTClassOrInterface;
  */
 abstract class AbstractTypeNode extends AbstractNode
 {
-    /**
-     * @var \PDepend\Source\AST\AbstractASTClassOrInterface
-     */
+    /** @var \PDepend\Source\AST\AbstractASTClassOrInterface */
     private $node;
 
     /**
@@ -49,10 +48,11 @@ abstract class AbstractTypeNode extends AbstractNode
      */
     public function getMethods()
     {
-        $methods = array();
+        $methods = [];
         foreach ($this->node->getMethods() as $method) {
             $methods[] = new MethodNode($method);
         }
+
         return $methods;
     }
 
@@ -64,17 +64,18 @@ abstract class AbstractTypeNode extends AbstractNode
      */
     public function getMethodNames()
     {
-        $names = array();
+        $names = [];
         foreach ($this->node->getMethods() as $method) {
             $names[] = $method->getName();
         }
+
         return $names;
     }
 
     /**
      * Returns the number of constants declared in this type.
      *
-     * @return integer
+     * @return int
      */
     public function getConstantCount()
     {

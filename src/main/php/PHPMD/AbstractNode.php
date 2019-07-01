@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD;
@@ -25,16 +26,13 @@ use PHPMD\Node\ASTNode;
  */
 abstract class AbstractNode
 {
-    /**
-     *
-     * @var \PDepend\Source\AST\ASTArtifact|\PDepend\Source\AST\ASTNode $node
-     */
+    /** @var \PDepend\Source\AST\ASTArtifact|\PDepend\Source\AST\ASTNode $node */
     private $node = null;
 
     /**
      * The collected metrics for this node.
      *
-     * @var array(string=>mixed) $_metrics
+     * @var array<string, mixed> $_metrics
      */
     private $metrics = null;
 
@@ -52,16 +50,18 @@ abstract class AbstractNode
      * The magic call method is used to pipe requests from rules direct
      * to the underlying PDepend ast node.
      *
-     * @param string $name
-     * @param array $args
+     * @param string   $name
+     * @param string[] $args
+     *
      * @return mixed
+     *
      * @throws \BadMethodCallException When the underlying PDepend node
      *         does not contain a method named <b>$name</b>.
      */
     public function __call($name, array $args)
     {
         if (method_exists($this->getNode(), $name)) {
-            return call_user_func_array(array($this->getNode(), $name), $args);
+            return call_user_func_array([$this->getNode(), $name], $args);
         }
         throw new \BadMethodCallException(
             sprintf('Invalid method %s() called.', $name)
@@ -76,16 +76,19 @@ abstract class AbstractNode
      */
     public function getParent()
     {
-        if (($node = $this->node->getParent()) === null) {
+        $node = $this->node->getParent();
+        if ($node === null) {
             return null;
         }
+
         return new ASTNode($node, $this->getFileName());
     }
 
     /**
      * Returns a child node at the given index.
      *
-     * @param integer $index The child offset.
+     * @param int $index The child offset.
+     *
      * @return \PHPMD\Node\ASTNode
      */
     public function getChild($index)
@@ -101,6 +104,7 @@ abstract class AbstractNode
      * has no child of the given type.
      *
      * @param string $type The searched child type.
+     *
      * @return \PHPMD\AbstractNode
      */
     public function getFirstChildOfType($type)
@@ -109,6 +113,7 @@ abstract class AbstractNode
         if ($node === null) {
             return null;
         }
+
         return new ASTNode($node, $this->getFileName());
     }
 
@@ -117,16 +122,18 @@ abstract class AbstractNode
      * type.
      *
      * @param string $type The searched child type.
+     *
      * @return \PHPMD\AbstractNode[]
      */
     public function findChildrenOfType($type)
     {
         $children = $this->node->findChildrenOfType('PDepend\Source\AST\AST' . $type);
 
-        $nodes = array();
+        $nodes = [];
         foreach ($children as $child) {
             $nodes[] = new ASTNode($child, $this->getFileName());
         }
+
         return $nodes;
     }
 
@@ -134,12 +141,14 @@ abstract class AbstractNode
      * Tests if this node represents the the given type.
      *
      * @param string $type The expected node type.
-     * @return boolean
+     *
+     * @return bool
      */
     public function isInstanceOf($type)
     {
         $class = 'PDepend\Source\AST\AST' . $type;
-        return ($this->node instanceof $class);
+
+        return $this->node instanceof $class;
     }
 
     /**
@@ -166,7 +175,7 @@ abstract class AbstractNode
     /**
      * Returns the begin line for this node in the php source code file.
      *
-     * @return integer
+     * @return int
      */
     public function getBeginLine()
     {
@@ -176,7 +185,7 @@ abstract class AbstractNode
     /**
      * Returns the end line for this node in the php source code file.
      *
-     * @return integer
+     * @return int
      */
     public function getEndLine()
     {
@@ -211,6 +220,7 @@ abstract class AbstractNode
     public function getType()
     {
         $type = explode('\\', get_class($this));
+
         return preg_replace('(node$)', '', strtolower(array_pop($type)));
     }
 
@@ -219,6 +229,7 @@ abstract class AbstractNode
      * <b>null</b> when no such metric exists.
      *
      * @param string $name The metric name or abbreviation.
+     *
      * @return mixed
      */
     public function getMetric($name)
@@ -226,20 +237,24 @@ abstract class AbstractNode
         if (isset($this->metrics[$name])) {
             return $this->metrics[$name];
         }
+
         return null;
     }
 
     /**
      * This method will set the metrics for this node.
      *
-     * @param array(string=>mixed) $metrics The collected node metrics.
+     * @param array<string,mixed> $metrics The collected node metrics.
+     *
      * @return void
      */
     public function setMetrics(array $metrics)
     {
-        if ($this->metrics === null) {
-            $this->metrics = $metrics;
+        if ($this->metrics !== null) {
+            return;
         }
+
+        $this->metrics = $metrics;
     }
 
     /**
@@ -247,7 +262,8 @@ abstract class AbstractNode
      * instance.
      *
      * @param \PHPMD\Rule $rule
-     * @return boolean
+     *
+     * @return bool
      */
     abstract public function hasSuppressWarningsAnnotationFor(Rule $rule);
 

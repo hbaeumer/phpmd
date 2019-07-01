@@ -9,16 +9,17 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Node;
 
-use PDepend\Source\AST\ASTMethod;
 use PDepend\Source\AST\ASTClass;
+use PDepend\Source\AST\ASTMethod;
 use PDepend\Source\AST\ASTTrait;
 use PHPMD\Rule;
 
@@ -78,7 +79,7 @@ class MethodNode extends AbstractCallableNode
      * Returns <b>true</b> when the underlying method is declared as abstract or
      * is declared as child of an interface.
      *
-     * @return boolean
+     * @return bool
      */
     public function isAbstract()
     {
@@ -90,13 +91,15 @@ class MethodNode extends AbstractCallableNode
      * instance.
      *
      * @param \PHPMD\Rule $rule
-     * @return boolean
+     *
+     * @return bool
      */
     public function hasSuppressWarningsAnnotationFor(Rule $rule)
     {
         if (parent::hasSuppressWarningsAnnotationFor($rule)) {
             return true;
         }
+
         return $this->getParentType()->hasSuppressWarningsAnnotationFor($rule);
     }
 
@@ -124,7 +127,8 @@ class MethodNode extends AbstractCallableNode
      * Returns <b>true</b> when this method is the initial method declaration.
      * Otherwise this method will return <b>false</b>.
      *
-     * @return boolean
+     * @return bool
+     *
      * @since 1.2.1
      */
     public function isDeclaration()
@@ -142,8 +146,8 @@ class MethodNode extends AbstractCallableNode
                 return false;
             }
         }
-
-        if (is_object($parentType = $parentNode->getParentClass())) {
+        $parentType = $parentNode->getParentClass();
+        if (is_object($parentType)) {
             $methods = $parentType->getAllMethods();
             if (isset($methods[$methodName])) {
                 return false;

@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD;
@@ -25,7 +26,7 @@ class RuleSet implements \IteratorAggregate
     /**
      * Should this rule set force the strict mode.
      *
-     * @var boolean
+     * @var bool
      * @since 1.2.0
      */
     private $strict = false;
@@ -61,26 +62,26 @@ class RuleSet implements \IteratorAggregate
     /**
      * Mapping between marker interfaces and concrete context code node classes.
      *
-     * @var array(string=>string)
+     * @var array<string, string>
      */
-    private $applyTo = array(
+    private $applyTo = [
         'PHPMD\\Rule\\ClassAware'     => 'PHPMD\\Node\\ClassNode',
         'PHPMD\\Rule\\FunctionAware'  => 'PHPMD\\Node\\FunctionNode',
         'PHPMD\\Rule\\InterfaceAware' => 'PHPMD\\Node\\InterfaceNode',
         'PHPMD\\Rule\\MethodAware'    => 'PHPMD\\Node\\MethodNode',
-    );
+    ];
 
     /**
      * Mapping of rules that apply to a concrete code node type.
      *
-     * @var array(string=>array)
+     * @var array<string, Rule[]>
      */
-    private $rules = array(
-        'PHPMD\\Node\\ClassNode'     =>  array(),
-        'PHPMD\\Node\\FunctionNode'  =>  array(),
-        'PHPMD\\Node\\InterfaceNode' =>  array(),
-        'PHPMD\\Node\\MethodNode'    =>  array(),
-    );
+    private $rules = [
+        'PHPMD\\Node\\ClassNode'     =>  [],
+        'PHPMD\\Node\\FunctionNode'  =>  [],
+        'PHPMD\\Node\\InterfaceNode' =>  [],
+        'PHPMD\\Node\\MethodNode'    =>  [],
+    ];
 
     /**
      * Returns the file name where the definition of this rule-set comes from.
@@ -96,6 +97,7 @@ class RuleSet implements \IteratorAggregate
      * Sets the file name where the definition of this rule-set comes from.
      *
      * @param string $fileName The file name.
+     *
      * @return void
      */
     public function setFileName($fileName)
@@ -117,6 +119,7 @@ class RuleSet implements \IteratorAggregate
      * Sets the name of this rule-set.
      *
      * @param string $name The name of this rule-set.
+     *
      * @return void
      */
     public function setName($name)
@@ -138,6 +141,7 @@ class RuleSet implements \IteratorAggregate
      * Sets the description text for this rule-set instance.
      *
      * @param string $description The description text.
+     *
      * @return void
      */
     public function setDescription($description)
@@ -149,6 +153,7 @@ class RuleSet implements \IteratorAggregate
      * Activates the strict mode for this rule set instance.
      *
      * @return void
+     *
      * @since 1.2.0
      */
     public function setStrict()
@@ -170,6 +175,7 @@ class RuleSet implements \IteratorAggregate
      * Sets the violation report used by the rule-set.
      *
      * @param \PHPMD\Report $report
+     *
      * @return void
      */
     public function setReport(Report $report)
@@ -181,6 +187,7 @@ class RuleSet implements \IteratorAggregate
      * This method returns a rule by its name or <b>null</b> if it doesn't exist.
      *
      * @param string $name
+     *
      * @return \PHPMD\Rule
      */
     public function getRuleByName($name)
@@ -190,6 +197,7 @@ class RuleSet implements \IteratorAggregate
                 return $rule;
             }
         }
+
         return null;
     }
 
@@ -201,12 +209,14 @@ class RuleSet implements \IteratorAggregate
      */
     public function getRules()
     {
-        $result = array();
+        $result = [];
         foreach ($this->rules as $rules) {
             foreach ($rules as $rule) {
-                if (in_array($rule, $result, true) === false) {
-                    $result[] = $rule;
+                if (in_array($rule, $result, true) !== false) {
+                    continue;
                 }
+
+                $result[] = $rule;
             }
         }
 
@@ -217,14 +227,17 @@ class RuleSet implements \IteratorAggregate
      * Adds a new rule to this rule-set.
      *
      * @param \PHPMD\Rule $rule
+     *
      * @return void
      */
     public function addRule(Rule $rule)
     {
         foreach ($this->applyTo as $applyTo => $type) {
-            if ($rule instanceof $applyTo) {
-                $this->rules[$type][] = $rule;
+            if (! ($rule instanceof $applyTo)) {
+                continue;
             }
+
+            $this->rules[$type][] = $rule;
         }
     }
 
@@ -232,6 +245,7 @@ class RuleSet implements \IteratorAggregate
      * Applies all registered rules that match against the concrete node type.
      *
      * @param \PHPMD\AbstractNode $node
+     *
      * @return void
      */
     public function apply(AbstractNode $node)
@@ -240,14 +254,14 @@ class RuleSet implements \IteratorAggregate
         $className = get_class($node);
 
         // Check for valid node type
-        if (!isset($this->rules[$className])) {
+        if (! isset($this->rules[$className])) {
             return;
         }
 
         // Apply all rules to this node
         foreach ($this->rules[$className] as $rule) {
             /** @var $rule Rule */
-            if ($node->hasSuppressWarningsAnnotationFor($rule) && !$this->strict) {
+            if ($node->hasSuppressWarningsAnnotationFor($rule) && ! $this->strict) {
                 continue;
             }
             $rule->setReport($this->report);

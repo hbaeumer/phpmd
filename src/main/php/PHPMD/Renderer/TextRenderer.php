@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Renderer;
@@ -26,12 +27,12 @@ use PHPMD\Report;
  */
 class TextRenderer extends AbstractRenderer
 {
-
     /**
      * This method will be called when the engine has finished the source analysis
      * phase.
      *
      * @param \PHPMD\Report $report
+     *
      * @return void
      */
     public function renderReport(Report $report)

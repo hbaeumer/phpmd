@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Rule\CleanCode;
@@ -42,11 +43,12 @@ class IfStatementAssignment extends AbstractRule implements MethodAware, Functio
      * that use assignment instead of comparison.
      *
      * @param AbstractNode $node An instance of MethodNode or FunctionNode class
+     *
      * @return void
      */
     public function apply(AbstractNode $node)
     {
-        $statements = $this->getStatements($node);
+        $statements  = $this->getStatements($node);
         $expressions = $this->getExpressions($statements);
         $assignments = $this->getAssignments($expressions);
 
@@ -57,11 +59,12 @@ class IfStatementAssignment extends AbstractRule implements MethodAware, Functio
      * Extracts if and elseif statements from method/function body
      *
      * @param AbstractNode $node An instance of MethodNode or FunctionNode class
+     *
      * @return array<ASTStatement>
      */
     private function getStatements(AbstractNode $node)
     {
-        $ifStatements = $node->findChildrenOfType('IfStatement');
+        $ifStatements     = $node->findChildrenOfType('IfStatement');
         $elseIfStatements = $node->findChildrenOfType('ElseIfStatement');
 
         return array_merge($ifStatements, $elseIfStatements);
@@ -71,11 +74,12 @@ class IfStatementAssignment extends AbstractRule implements MethodAware, Functio
      * Extracts all expression from statements array
      *
      * @param array<ASTStatement> $statements Array of if and elseif clauses
+     *
      * @return array<ASTExpression>
      */
     private function getExpressions(array $statements)
     {
-        $expressions = array();
+        $expressions = [];
         /** @var ASTNode $statement */
         foreach ($statements as $statement) {
             $expressions = array_merge($expressions, $statement->findChildrenOfType('Expression'));
@@ -88,11 +92,12 @@ class IfStatementAssignment extends AbstractRule implements MethodAware, Functio
      * Extracts all assignments from expressions array
      *
      * @param array<ASTExpression> $expressions Array of expressions
+     *
      * @return array<ASTAssignmentExpression>
      */
     private function getAssignments(array $expressions)
     {
-        $assignments = array();
+        $assignments = [];
         /** @var ASTNode $expression */
         foreach ($expressions as $expression) {
             $assignments = array_merge($assignments, $expression->findChildrenOfType('AssignmentExpression'));
@@ -104,23 +109,25 @@ class IfStatementAssignment extends AbstractRule implements MethodAware, Functio
     /**
      * Signals if any violations have been found in given method or function
      *
-     * @param AbstractNode $node An instance of MethodNode or FunctionNode class
+     * @param AbstractNode                   $node        An instance of MethodNode or FunctionNode class
      * @param array<ASTAssignmentExpression> $assignments Array of assignments
      */
     private function addViolations(AbstractNode $node, array $assignments)
     {
-        $processesViolations = array();
+        $processesViolations = [];
         /** @var \PDepend\Source\AST\AbstractASTNode $assignment */
         foreach ($assignments as $assignment) {
-            if (null === $assignment || $assignment->getImage() !== '=') {
+            if ($assignment === null || $assignment->getImage() !== '=') {
                 continue;
             }
 
             $uniqueHash = $assignment->getStartColumn() . ':' . $assignment->getStartLine();
-            if (!in_array($uniqueHash, $processesViolations)) {
-                $processesViolations[] = $uniqueHash;
-                $this->addViolation($node, array($assignment->getStartColumn(), $assignment->getStartLine()));
+            if (in_array($uniqueHash, $processesViolations)) {
+                continue;
             }
+
+            $processesViolations[] = $uniqueHash;
+            $this->addViolation($node, [$assignment->getStartColumn(), $assignment->getStartLine()]);
         }
     }
 }

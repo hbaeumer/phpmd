@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Rule\Controversial;
@@ -35,17 +36,20 @@ class CamelCaseClassName extends AbstractRule implements ClassAware, InterfaceAw
      * and emits a rule violation.
      *
      * @param \PHPMD\AbstractNode $node
+     *
      * @return void
      */
     public function apply(AbstractNode $node)
     {
-        if (!preg_match('/^[A-Z][a-zA-Z0-9]*$/', $node->getName())) {
-            $this->addViolation(
-                $node,
-                array(
-                    $node->getName(),
-                )
-            );
+        if (preg_match('/^[A-Z][a-zA-Z0-9]*$/', $node->getName())) {
+            return;
         }
+
+        $this->addViolation(
+            $node,
+            [
+                $node->getName(),
+            ]
+        );
     }
 }

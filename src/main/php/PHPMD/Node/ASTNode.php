@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Node;
@@ -35,7 +36,7 @@ class ASTNode extends \PHPMD\AbstractNode
      * Constructs a new ast node instance.
      *
      * @param \PDepend\Source\AST\ASTNode $node
-     * @param string $fileName
+     * @param string                      $fileName
      */
     public function __construct(\PDepend\Source\AST\ASTNode $node, $fileName)
     {
@@ -49,7 +50,9 @@ class ASTNode extends \PHPMD\AbstractNode
      * instance.
      *
      * @param \PHPMD\Rule $rule
-     * @return boolean
+     *
+     * @return bool
+     *
      * @SuppressWarnings("PMD.UnusedFormalParameter")
      */
     public function hasSuppressWarningsAnnotationFor(Rule $rule)

@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Rule\Design;
@@ -35,15 +36,18 @@ class EmptyCatchBlock extends AbstractRule implements MethodAware, FunctionAware
      * and emits a rule violation when it exists.
      *
      * @param \PHPMD\AbstractNode $node
+     *
      * @return void
      */
     public function apply(AbstractNode $node)
     {
         foreach ($node->findChildrenOfType('CatchStatement') as $catchBlock) {
             $scope = $catchBlock->getFirstChildOfType('ScopeStatement');
-            if (count($scope->getChildren()) == 0) {
-                $this->addViolation($catchBlock, array($node->getName()));
+            if (count($scope->getChildren()) !== 0) {
+                continue;
             }
+
+            $this->addViolation($catchBlock, [$node->getName()]);
         }
     }
 }

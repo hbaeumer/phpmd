@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Rule\CleanCode;
@@ -38,15 +39,16 @@ class StaticAccess extends AbstractRule implements MethodAware, FunctionAware
      * Method checks for use of static access and warns about it.
      *
      * @param \PHPMD\AbstractNode $node
+     *
      * @return void
      */
     public function apply(AbstractNode $node)
     {
         $exceptions = $this->getExceptionsList();
-        $nodes = $node->findChildrenOfType('MemberPrimaryPrefix');
+        $nodes      = $node->findChildrenOfType('MemberPrimaryPrefix');
 
         foreach ($nodes as $methodCall) {
-            if (!$this->isStaticMethodCall($methodCall)) {
+            if (! $this->isStaticMethodCall($methodCall)) {
                 continue;
             }
 
@@ -55,7 +57,7 @@ class StaticAccess extends AbstractRule implements MethodAware, FunctionAware
                 continue;
             }
 
-            $this->addViolation($methodCall, array($className, $node->getName()));
+            $this->addViolation($methodCall, [$className, $node->getName()]);
         }
     }
 
@@ -63,8 +65,8 @@ class StaticAccess extends AbstractRule implements MethodAware, FunctionAware
     {
         return $methodCall->getChild(0)->getNode() instanceof ASTClassOrInterfaceReference &&
                $methodCall->getChild(1)->getNode() instanceof ASTMethodPostfix &&
-               !$this->isCallingParent($methodCall) &&
-               !$this->isCallingSelf($methodCall);
+               ! $this->isCallingParent($methodCall) &&
+               ! $this->isCallingSelf($methodCall);
     }
 
     private function isCallingParent(AbstractNode $methodCall)
@@ -80,7 +82,7 @@ class StaticAccess extends AbstractRule implements MethodAware, FunctionAware
     /**
      * Gets array of exceptions from property
      *
-     * @return array
+     * @return string[]
      */
     private function getExceptionsList()
     {
@@ -91,7 +93,7 @@ class StaticAccess extends AbstractRule implements MethodAware, FunctionAware
         }
 
         return array_map(
-            function ($className) {
+            static function ($className) {
                 return trim($className, " \t\n\r\0\x0B\\");
             },
             explode(',', $exceptions)

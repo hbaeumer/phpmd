@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD;
@@ -30,16 +31,16 @@ class PHPMD
     /**
      * List of valid file extensions for analyzed files.
      *
-     * @var array(string)
+     * @var string[]
      */
-    private $fileExtensions = array('php', 'php3', 'php4', 'php5', 'inc');
+    private $fileExtensions = ['php', 'php3', 'php4', 'php5', 'inc'];
 
     /**
      * List of exclude directory patterns.
      *
-     * @var array(string)
+     * @var string[]
      */
-    private $ignorePatterns = array('.git', '.svn', 'CVS', '.bzr', '.hg', 'SCCS');
+    private $ignorePatterns = ['.git', '.svn', 'CVS', '.bzr', '.hg', 'SCCS'];
 
     /**
      * The input source file or directory.
@@ -52,7 +53,7 @@ class PHPMD
      * This property will be set to <b>true</b> when an error or a violation
      * was found in the processed source code.
      *
-     * @var boolean
+     * @var bool
      * @since 0.2.5
      */
     private $violations = false;
@@ -60,16 +61,17 @@ class PHPMD
     /**
      * Additional options for PHPMD or one of it's parser backends.
      *
-     * @var array
+     * @var string[]
      * @since 1.2.0
      */
-    private $options = array();
+    private $options = [];
 
     /**
      * This method will return <b>true</b> when the processed source code
      * contains violations.
      *
-     * @return boolean
+     * @return bool
+     *
      * @since 0.2.5
      */
     public function hasViolations()
@@ -91,6 +93,7 @@ class PHPMD
      * Returns an array with valid php source file extensions.
      *
      * @return string[]
+     *
      * @since 0.2.0
      */
     public function getFileExtensions()
@@ -101,7 +104,8 @@ class PHPMD
     /**
      * Sets a list of filename extensions for valid php source code files.
      *
-     * @param array(string) $fileExtensions Extensions without leading dot.
+     * @param string[] $fileExtensions Extensions without leading dot.
+     *
      * @return void
      */
     public function setFileExtensions(array $fileExtensions)
@@ -113,6 +117,7 @@ class PHPMD
      * Returns an array with string patterns that mark a file path as invalid.
      *
      * @return string[]
+     *
      * @since 0.2.0
      */
     public function getIgnorePattern()
@@ -124,7 +129,8 @@ class PHPMD
      * Sets a list of ignore patterns that is used to exclude directories from
      * the source analysis.
      *
-     * @param array(string) $ignorePatterns List of ignore patterns.
+     * @param string[] $ignorePatterns List of ignore patterns.
+     *
      * @return void
      */
     public function setIgnorePattern(array $ignorePatterns)
@@ -138,7 +144,7 @@ class PHPMD
     /**
      * Returns additional options for PHPMD or one of it's parser backends.
      *
-     * @return array
+     * @return string[]
      */
     public function getOptions()
     {
@@ -148,7 +154,8 @@ class PHPMD
     /**
      * Sets additional options for PHPMD or one of it's parser backends.
      *
-     * @param array $options Additional backend or PHPMD options.
+     * @param string[] $options Additional backend or PHPMD options.
+     *
      * @return void
      */
     public function setOptions(array $options)
@@ -161,10 +168,11 @@ class PHPMD
      * path. It will apply rules defined in the comma-separated <b>$ruleSets</b>
      * argument. The result will be passed to all given renderer instances.
      *
-     * @param string $inputPath
-     * @param string $ruleSets
+     * @param string                    $inputPath
+     * @param string                    $ruleSets
      * @param \PHPMD\AbstractRenderer[] $renderers
-     * @param \PHPMD\RuleSetFactory $ruleSetFactory
+     * @param \PHPMD\RuleSetFactory     $ruleSetFactory
+     *
      * @return void
      */
     public function processFiles(
@@ -173,7 +181,6 @@ class PHPMD
         array $renderers,
         RuleSetFactory $ruleSetFactory
     ) {
-
         // Merge parsed excludes
         $this->ignorePatterns = array_merge($this->ignorePatterns, $ruleSetFactory->getIgnorePattern($ruleSets));
 
@@ -204,6 +211,6 @@ class PHPMD
             $renderer->end();
         }
 
-        $this->violations = !$report->isEmpty();
+        $this->violations = ! $report->isEmpty();
     }
 }

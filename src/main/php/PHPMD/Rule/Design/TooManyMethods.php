@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Rule\Design;
@@ -39,6 +40,7 @@ class TooManyMethods extends AbstractRule implements ClassAware
      * this number against a configured threshold.
      *
      * @param \PHPMD\AbstractNode $node
+     *
      * @return void
      */
     public function apply(AbstractNode $node)
@@ -49,19 +51,19 @@ class TooManyMethods extends AbstractRule implements ClassAware
         if ($node->getMetric('nom') <= $threshold) {
             return;
         }
-        /** @var $node AbstractTypeNode */
+        /** @var AbstractTypeNode $node */
         $nom = $this->countMethods($node);
         if ($nom <= $threshold) {
             return;
         }
         $this->addViolation(
             $node,
-            array(
+            [
                 $node->getType(),
                 $node->getName(),
                 $nom,
-                $threshold
-            )
+                $threshold,
+            ]
         );
     }
 
@@ -69,16 +71,20 @@ class TooManyMethods extends AbstractRule implements ClassAware
      * Counts all methods within the given class/interface node.
      *
      * @param \PHPMD\Node\AbstractTypeNode $node
-     * @return integer
+     *
+     * @return int
      */
     private function countMethods(AbstractTypeNode $node)
     {
         $count = 0;
         foreach ($node->getMethodNames() as $name) {
-            if (preg_match($this->ignoreRegexp, $name) === 0) {
-                ++$count;
+            if (preg_match($this->ignoreRegexp, $name) !== 0) {
+                continue;
             }
+
+            ++$count;
         }
+
         return $count;
     }
 }

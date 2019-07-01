@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Rule\Controversial;
@@ -30,10 +31,8 @@ use PHPMD\Rule\MethodAware;
  */
 class CamelCaseVariableName extends AbstractRule implements MethodAware, FunctionAware
 {
-    /**
-     * @var array
-     */
-    private $exceptions = array(
+    /** @var string[] */
+    private $exceptions = [
         '$php_errormsg',
         '$http_response_header',
         '$GLOBALS',
@@ -45,13 +44,14 @@ class CamelCaseVariableName extends AbstractRule implements MethodAware, Functio
         '$_SESSION',
         '$_REQUEST',
         '$_ENV',
-    );
+    ];
 
     /**
      * This method checks if a variable is not named in camelCase
      * and emits a rule violation.
      *
      * @param \PHPMD\AbstractNode $node
+     *
      * @return void
      */
     public function apply(AbstractNode $node)
@@ -71,7 +71,7 @@ class CamelCaseVariableName extends AbstractRule implements MethodAware, Functio
                 continue;
             }
 
-            $this->addViolation($node, array($image));
+            $this->addViolation($node, [$image]);
         }
     }
 }

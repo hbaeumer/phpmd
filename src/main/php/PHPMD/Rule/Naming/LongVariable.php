@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Rule\Naming;
@@ -33,9 +34,9 @@ class LongVariable extends AbstractRule implements ClassAware, MethodAware, Func
      * Temporary map holding variables that were already processed in the
      * current context.
      *
-     * @var array(string=>boolean)
+     * @var array<string, bool>
      */
-    private $processedVariables = array();
+    private $processedVariables = [];
 
     /**
      * Extracts all variable and variable declarator nodes from the given node
@@ -43,6 +44,7 @@ class LongVariable extends AbstractRule implements ClassAware, MethodAware, Func
      * length.
      *
      * @param \PHPMD\AbstractNode $node
+     *
      * @return void
      */
     public function apply(AbstractNode $node)
@@ -77,20 +79,24 @@ class LongVariable extends AbstractRule implements ClassAware, MethodAware, Func
      * configured threshold.
      *
      * @param \PHPMD\AbstractNode $node
+     *
      * @return void
      */
     protected function checkNodeImage(AbstractNode $node)
     {
-        if ($this->isNotProcessed($node)) {
-            $this->addProcessed($node);
-            $this->checkMaximumLength($node);
+        if (! $this->isNotProcessed($node)) {
+            return;
         }
+
+        $this->addProcessed($node);
+        $this->checkMaximumLength($node);
     }
 
     /**
      * Template method that performs the real node image check.
      *
      * @param \PHPMD\AbstractNode $node
+     *
      * @return void
      */
     protected function checkMaximumLength(AbstractNode $node)
@@ -102,7 +108,7 @@ class LongVariable extends AbstractRule implements ClassAware, MethodAware, Func
         if ($this->isNameAllowedInContext($node)) {
             return;
         }
-        $this->addViolation($node, array($node->getImage(), $threshold));
+        $this->addViolation($node, [$node->getImage(), $threshold]);
     }
 
     /**
@@ -110,7 +116,8 @@ class LongVariable extends AbstractRule implements ClassAware, MethodAware, Func
      * moment the only context is a static member.
      *
      * @param \PHPMD\AbstractNode $node
-     * @return boolean
+     *
+     * @return bool
      */
     private function isNameAllowedInContext(AbstractNode $node)
     {
@@ -122,8 +129,9 @@ class LongVariable extends AbstractRule implements ClassAware, MethodAware, Func
      * the given type.
      *
      * @param \PHPMD\AbstractNode $node
-     * @param string $type
-     * @return boolean
+     * @param string              $type
+     *
+     * @return bool
      */
     private function isChildOf(AbstractNode $node, $type)
     {
@@ -134,6 +142,7 @@ class LongVariable extends AbstractRule implements ClassAware, MethodAware, Func
             }
             $parent = $parent->getParent();
         }
+
         return false;
     }
 
@@ -144,13 +153,14 @@ class LongVariable extends AbstractRule implements ClassAware, MethodAware, Func
      */
     protected function resetProcessed()
     {
-        $this->processedVariables = array();
+        $this->processedVariables = [];
     }
 
     /**
      * Flags the given node as already processed.
      *
      * @param \PHPMD\AbstractNode $node
+     *
      * @return void
      */
     protected function addProcessed(AbstractNode $node)
@@ -162,10 +172,11 @@ class LongVariable extends AbstractRule implements ClassAware, MethodAware, Func
      * Checks if the given node was already processed.
      *
      * @param \PHPMD\AbstractNode $node
-     * @return boolean
+     *
+     * @return bool
      */
     protected function isNotProcessed(AbstractNode $node)
     {
-        return !isset($this->processedVariables[$node->getImage()]);
+        return ! isset($this->processedVariables[$node->getImage()]);
     }
 }

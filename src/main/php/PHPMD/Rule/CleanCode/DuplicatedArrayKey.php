@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Rule\CleanCode;
@@ -41,6 +42,7 @@ class DuplicatedArrayKey extends AbstractRule implements MethodAware, FunctionAw
      * Retrieves all arrays from single node and performs comparison logic on it
      *
      * @param AbstractNode $node
+     *
      * @return void
      */
     public function apply(AbstractNode $node)
@@ -56,22 +58,23 @@ class DuplicatedArrayKey extends AbstractRule implements MethodAware, FunctionAw
      * with duplicated entries for any key and emits a rule violation if so.
      *
      * @param ASTNode $node Array node.
+     *
      * @return void
      */
     private function checkForDuplicatedArrayKeys(ASTNode $node)
     {
-        $keys = array();
+        $keys = [];
         /** @var ASTArrayElement $arrayElement */
         foreach ($node->getChildren() as $index => $arrayElement) {
             $arrayElement = $this->normalizeKey($arrayElement, $index);
-            if (null === $arrayElement) {
+            if ($arrayElement === null) {
                 // skip everything that can't be resolved easily
                 continue;
             }
 
             $key = $arrayElement->getImage();
             if (isset($keys[$key])) {
-                $this->addViolation($node, array($key, $arrayElement->getStartLine()));
+                $this->addViolation($node, [$key, $arrayElement->getStartLine()]);
                 continue;
             }
             $keys[$key] = $arrayElement;
@@ -87,8 +90,9 @@ class DuplicatedArrayKey extends AbstractRule implements MethodAware, FunctionAw
      * As current logic doesn't evaluate expressions nor constants,
      * statics, globals, etc. we simply skip them.
      *
-     * @param AbstractASTNode $node Array key to evaluate.
-     * @param int $index Fallback in case of non-associative arrays
+     * @param AbstractASTNode $node  Array key to evaluate.
+     * @param int             $index Fallback in case of non-associative arrays
+     *
      * @return AbstractASTNode Key name
      */
     private function normalizeKey(AbstractASTNode $node, $index)
@@ -96,11 +100,12 @@ class DuplicatedArrayKey extends AbstractRule implements MethodAware, FunctionAw
         // non-associative - key name equals to its index
         if (count($node->getChildren()) === 0) {
             $node->setImage((string) $index);
+
             return $node;
         }
-        
+
         $node = $node->getChild(0);
-        if (!($node instanceof ASTLiteral)) {
+        if (! ($node instanceof ASTLiteral)) {
             // skip expressions, method calls, globals and constants
             return null;
         }
@@ -113,6 +118,7 @@ class DuplicatedArrayKey extends AbstractRule implements MethodAware, FunctionAw
      * Cleans string literals and casts boolean and null values as PHP engine does
      *
      * @param PDependASTNode $key
+     *
      * @return string
      */
     private function castStringFromLiteral(PDependASTNode $key)

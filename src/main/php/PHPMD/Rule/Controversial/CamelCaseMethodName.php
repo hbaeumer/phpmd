@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Rule\Controversial;
@@ -29,7 +30,8 @@ use PHPMD\Rule\MethodAware;
  */
 class CamelCaseMethodName extends AbstractRule implements MethodAware
 {
-    protected $ignoredMethods = array(
+    /** @var string[] */
+    protected $ignoredMethods = [
         '__construct',
         '__destruct',
         '__set',
@@ -45,28 +47,31 @@ class CamelCaseMethodName extends AbstractRule implements MethodAware
         '__set_state',
         '__clone',
         '__debugInfo',
-    );
+    ];
 
     /**
      * This method checks if a method is not named in camelCase
      * and emits a rule violation.
      *
      * @param \PHPMD\AbstractNode $node
+     *
      * @return void
      */
     public function apply(AbstractNode $node)
     {
         $methodName = $node->getName();
-        if (!in_array($methodName, $this->ignoredMethods)) {
-            if (!$this->isValid($methodName)) {
-                $this->addViolation(
-                    $node,
-                    array(
-                        $methodName,
-                    )
-                );
-            }
+        if (in_array($methodName, $this->ignoredMethods)) {
+            return;
         }
+
+        if ($this->isValid($methodName)) {
+            return;
+        }
+
+        $this->addViolation(
+            $node,
+            [$methodName]
+        );
     }
 
     private function isValid($methodName)

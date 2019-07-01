@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Rule\Design;
@@ -33,6 +34,7 @@ class LongMethod extends AbstractRule implements FunctionAware, MethodAware
      * methode node against a configured threshold.
      *
      * @param \PHPMD\AbstractNode $node
+     *
      * @return void
      */
     public function apply(AbstractNode $node)
@@ -43,7 +45,7 @@ class LongMethod extends AbstractRule implements FunctionAware, MethodAware
         if ($this->getBooleanProperty('ignore-whitespace')) {
             $loc = $node->getMetric('eloc');
         }
-        if (-1 === $loc) {
+        if ($loc === -1) {
             $loc = $node->getMetric('loc');
         }
 
@@ -53,12 +55,12 @@ class LongMethod extends AbstractRule implements FunctionAware, MethodAware
 
         $this->addViolation(
             $node,
-            array(
+            [
                 $node->getType(),
                 $node->getName(),
                 $loc,
-                $threshold
-            )
+                $threshold,
+            ]
         );
     }
 }

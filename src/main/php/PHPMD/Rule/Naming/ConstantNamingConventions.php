@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Rule\Naming;
@@ -33,14 +34,17 @@ class ConstantNamingConventions extends AbstractRule implements ClassAware, Inte
      * the image only contains upper case characters.
      *
      * @param \PHPMD\AbstractNode $node
+     *
      * @return void
      */
     public function apply(AbstractNode $node)
     {
         foreach ($node->findChildrenOfType('ConstantDeclarator') as $declarator) {
-            if ($declarator->getImage() !== strtoupper($declarator->getImage())) {
-                $this->addViolation($declarator, array($declarator->getImage()));
+            if ($declarator->getImage() === strtoupper($declarator->getImage())) {
+                continue;
             }
+
+            $this->addViolation($declarator, [$declarator->getImage()]);
         }
     }
 }

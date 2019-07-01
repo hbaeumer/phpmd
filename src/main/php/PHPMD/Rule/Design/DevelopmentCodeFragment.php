@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Rule\Design;
@@ -28,6 +29,7 @@ use PHPMD\Rule\MethodAware;
  * into the code.
  *
  * @link https://github.com/phpmd/phpmd/issues/265
+ *
  * @since 2.3.0
  */
 class DevelopmentCodeFragment extends AbstractRule implements MethodAware, FunctionAware
@@ -37,13 +39,14 @@ class DevelopmentCodeFragment extends AbstractRule implements MethodAware, Funct
      * and emits a rule violation when it exists.
      *
      * @param \PHPMD\AbstractNode $node
+     *
      * @return void
      */
     public function apply(AbstractNode $node)
     {
         foreach ($node->findChildrenOfType('FunctionPostfix') as $postfix) {
             $image = strtolower($postfix->getImage());
-            if (false === in_array($image, $this->getSuspectImages())) {
+            if (in_array($image, $this->getSuspectImages()) === false) {
                 continue;
             }
 
@@ -52,7 +55,7 @@ class DevelopmentCodeFragment extends AbstractRule implements MethodAware, Funct
                 $image = sprintf('%s::%s', $node->getParentName(), $node->getImage());
             }
 
-            $this->addViolation($postfix, array($node->getType(), $image, $postfix->getImage()));
+            $this->addViolation($postfix, [$node->getType(), $image, $postfix->getImage()]);
         }
     }
 
@@ -60,7 +63,7 @@ class DevelopmentCodeFragment extends AbstractRule implements MethodAware, Funct
      * Returns an array with function images that are normally only used during
      * development.
      *
-     * @return array
+     * @return string[]
      */
     private function getSuspectImages()
     {

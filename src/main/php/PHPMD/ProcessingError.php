@@ -9,16 +9,18 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD;
 
 /**
  * Simple data class that we use to keep parsing errors for the report renderer.
+ *
  * @since     1.2.1
  */
 class ProcessingError
@@ -74,6 +76,7 @@ class ProcessingError
      * as a mandatory property to PDepend's exceptions.
      *
      * @param string $message
+     *
      * @return string
      */
     private function extractFile($message)
@@ -84,6 +87,7 @@ class ProcessingError
         if (isset($match[1])) {
             return $match[1];
         }
+
         return '';
     }
 }

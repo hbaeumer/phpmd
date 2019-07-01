@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Rule;
@@ -32,10 +33,11 @@ abstract class AbstractLocalVariable extends AbstractRule
      * PHP super globals that are available in all php scopes, so that they
      * can never be unused local variables.
      *
-     * @var array(string=>boolean)
      * @link http://php.net/manual/en/reserved.variables.php
+     *
+     * @var array<string, bool>
      */
-    private static $superGlobals = array(
+    private static $superGlobals = [
         '$argc' => true,
         '$argv' => true,
         '$_COOKIE' => true,
@@ -50,21 +52,21 @@ abstract class AbstractLocalVariable extends AbstractRule
         '$HTTP_RAW_POST_DATA' => true,
         '$php_errormsg' => true,
         '$http_response_header' => true,
-    );
+    ];
 
     /**
      * Tests if the given variable node represents a local variable or if it is
      * a static object property or something similar.
      *
      * @param \PHPMD\Node\ASTNode $variable The variable to check.
-     * @return boolean
+     *
+     * @return bool
      */
     protected function isLocal(ASTNode $variable)
     {
-        return (false === $variable->isThis()
+        return $variable->isThis() === false
             && $this->isNotSuperGlobal($variable)
-            && $this->isRegularVariable($variable)
-        );
+            && $this->isRegularVariable($variable);
     }
 
     /**
@@ -72,11 +74,12 @@ abstract class AbstractLocalVariable extends AbstractRule
      * that are available in scopes.
      *
      * @param \PHPMD\AbstractNode $variable
-     * @return boolean
+     *
+     * @return bool
      */
     protected function isNotSuperGlobal(AbstractNode $variable)
     {
-        return !isset(self::$superGlobals[$variable->getImage()]);
+        return ! isset(self::$superGlobals[$variable->getImage()]);
     }
 
     /**
@@ -84,7 +87,8 @@ abstract class AbstractLocalVariable extends AbstractRule
      * or method postfix.
      *
      * @param \PHPMD\Node\ASTNode $variable
-     * @return boolean
+     *
+     * @return bool
      */
     protected function isRegularVariable(ASTNode $variable)
     {
@@ -94,12 +98,13 @@ abstract class AbstractLocalVariable extends AbstractRule
         if ($parent->isInstanceOf('PropertyPostfix')) {
             $primaryPrefix = $parent->getParent();
             if ($primaryPrefix->getParent()->isInstanceOf('MemberPrimaryPrefix')) {
-                return !$primaryPrefix->getParent()->isStatic();
+                return ! $primaryPrefix->getParent()->isStatic();
             }
-            return ($parent->getChild(0)->getNode() !== $node->getNode()
-                || !$primaryPrefix->isStatic()
-            );
+
+            return $parent->getChild(0)->getNode() !== $node->getNode()
+                || ! $primaryPrefix->isStatic();
         }
+
         return true;
     }
 
@@ -108,11 +113,12 @@ abstract class AbstractLocalVariable extends AbstractRule
      * instance.
      *
      * @param \PHPMD\Node\ASTNode $node
+     *
      * @return \PHPMD\Node\ASTNode
      */
     protected function stripWrappedIndexExpression(ASTNode $node)
     {
-        if (false === $this->isWrappedByIndexExpression($node)) {
+        if ($this->isWrappedByIndexExpression($node) === false) {
             return $node;
         }
 
@@ -120,6 +126,7 @@ abstract class AbstractLocalVariable extends AbstractRule
         if ($parent->getChild(0)->getNode() === $node->getNode()) {
             return $this->stripWrappedIndexExpression($parent);
         }
+
         return $node;
     }
 
@@ -127,13 +134,13 @@ abstract class AbstractLocalVariable extends AbstractRule
      * Tests if the given variable node os part of an index expression.
      *
      * @param \PHPMD\Node\ASTNode $node
-     * @return boolean
+     *
+     * @return bool
      */
     protected function isWrappedByIndexExpression(ASTNode $node)
     {
-        return ($node->getParent()->isInstanceOf('ArrayIndexExpression')
-            || $node->getParent()->isInstanceOf('StringIndexExpression')
-        );
+        return $node->getParent()->isInstanceOf('ArrayIndexExpression')
+            || $node->getParent()->isInstanceOf('StringIndexExpression');
     }
 
     /**
@@ -141,12 +148,13 @@ abstract class AbstractLocalVariable extends AbstractRule
      * insensitive.
      *
      * @param \PHPMD\AbstractNode $node
-     * @param string $name
-     * @return boolean
+     * @param string              $name
+     *
+     * @return bool
      */
     protected function isFunctionNameEqual(AbstractNode $node, $name)
     {
-        return (0 === strcasecmp(trim($node->getImage(), '\\'), $name));
+        return strcasecmp(trim($node->getImage(), '\\'), $name) === 0;
     }
 
     /**
@@ -154,13 +162,14 @@ abstract class AbstractLocalVariable extends AbstractRule
      * This method checks if the last part of function fully qualified name is equal to $name
      *
      * @param \PHPMD\AbstractNode $node
-     * @param string $name
-     * @return boolean
+     * @param string              $name
+     *
+     * @return bool
      */
     protected function isFunctionNameEndingWith(AbstractNode $node, $name)
     {
         $parts = explode('\\', trim($node->getImage(), '\\'));
 
-        return (0 === strcasecmp(array_pop($parts), $name));
+        return strcasecmp(array_pop($parts), $name) === 0;
     }
 }

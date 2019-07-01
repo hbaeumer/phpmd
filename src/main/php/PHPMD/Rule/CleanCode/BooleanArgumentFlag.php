@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD\Rule\CleanCode;
@@ -34,19 +35,20 @@ class BooleanArgumentFlag extends AbstractRule implements MethodAware, FunctionA
      * This method checks if a method/function has boolean flag arguments and warns about them.
      *
      * @param \PHPMD\AbstractNode $node
+     *
      * @return void
      */
     public function apply(AbstractNode $node)
     {
         foreach ($node->findChildrenOfType('FormalParameter') as $param) {
             $declarator = $param->getFirstChildOfType('VariableDeclarator');
-            $value = $declarator->getValue();
+            $value      = $declarator->getValue();
 
-            if (false === $this->isBooleanValue($value)) {
+            if ($this->isBooleanValue($value) === false) {
                 continue;
             }
 
-            $this->addViolation($param, array($node->getImage(), $declarator->getImage()));
+            $this->addViolation($param, [$node->getImage(), $declarator->getImage()]);
         }
     }
 

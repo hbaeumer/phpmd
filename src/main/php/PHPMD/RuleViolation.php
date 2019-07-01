@@ -9,10 +9,11 @@
  * For full copyright and license information, please see the LICENSE file.
  * Redistributions of files must retain the above copyright notice.
  *
+ * @link http://phpmd.org/
+ *
  * @author Manuel Pichler <mapi@phpmd.org>
  * @copyright Manuel Pichler. All rights reserved.
  * @license https://opensource.org/licenses/bsd-license.php BSD License
- * @link http://phpmd.org/
  */
 
 namespace PHPMD;
@@ -81,10 +82,10 @@ class RuleViolation
     /**
      * Constructs a new rule violation instance.
      *
-     * @param \PHPMD\Rule $rule
+     * @param \PHPMD\Rule         $rule
      * @param \PHPMD\AbstractNode $node
-     * @param string $violationMessage
-     * @param mixed $metric
+     * @param string              $violationMessage
+     * @param mixed               $metric
      */
     public function __construct(Rule $rule, AbstractNode $node, $violationMessage, $metric = null)
     {
@@ -146,7 +147,7 @@ class RuleViolation
     /**
      * Returns the first line of the node that causes this rule violation.
      *
-     * @return integer
+     * @return int
      */
     public function getBeginLine()
     {
@@ -156,7 +157,7 @@ class RuleViolation
     /**
      * Returns the last line of the node that causes this rule violation.
      *
-     * @return integer
+     * @return int
      */
     public function getEndLine()
     {
