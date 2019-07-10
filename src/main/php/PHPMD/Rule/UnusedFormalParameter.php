@@ -187,9 +187,10 @@ class UnusedFormalParameter extends AbstractLocalVariable implements FunctionAwa
     }
 
     /**
-     * Removes all the regular variables from a given node 
+     * Removes all the regular variables from a given node
      *
      * @param \PHPMD\AbstractNode $node The node to remove the regular variables from.
+     *
      * @return void
      */
     private function removeRegularVariables(AbstractNode $node)
@@ -204,9 +205,9 @@ class UnusedFormalParameter extends AbstractLocalVariable implements FunctionAwa
             unset($this->nodes[$variable->getImage()]);
         }
     }
-    
+
     /**
-     * Removes all the compound variables from a given node 
+     * Removes all the compound variables from a given node
      *
      * Such as
      *
@@ -221,6 +222,7 @@ class UnusedFormalParameter extends AbstractLocalVariable implements FunctionAwa
      * </code>
      *
      * @param \PHPMD\AbstractNode $node The node to remove the compound variables from.
+     *
      * @return void
      */
     private function removeCompoundVariables(AbstractNode $node)
@@ -247,6 +249,7 @@ class UnusedFormalParameter extends AbstractLocalVariable implements FunctionAwa
      * If the given method calls func_get_args() then all parameters are automatically referenced.
      *
      * @param \PHPMD\AbstractNode $node The node to remove the referneced variables from.
+     *
      * @return void
      */
     private function removeVariablesUsedByFuncGetArgs(AbstractNode $node)
